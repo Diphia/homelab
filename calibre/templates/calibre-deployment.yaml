@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre
+spec:
+  selector:
+    matchLabels:
+      app: calibre
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: calibre
+    spec:
+      volumes:
+      - name: calibre-media
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMediaMountPath }}
+      - name: calibre-config
+        emptyDir: {}
+      #initContainers:
+      #- name: volume-mount-hack
+        #image: busybox
+        #command: ["sh", "-c", "chmod -R 777 /config"]
+        #volumeMounts:
+        #- name: calibre-config
+          #mountPath: "/config"
+      containers:
+      - name: calibre
+        image: linuxserver/calibre-web
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8083
+          protocol: TCP
+        volumeMounts:
+        - name: calibre-media
+          mountPath: "/media"
+        - name: calibre-config
+          mountPath: "/config"
