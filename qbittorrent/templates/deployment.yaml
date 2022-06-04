@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+spec:
+  selector:
+    matchLabels:
+      app: qbittorrent
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      volumes:
+      - name: qbittorrent-config
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsConfigMountPath }}
+      - name: qbittorrent-downloads
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsDownloadMountPath }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: network.policy
+                operator: In
+                values:
+                - direct
+      containers:
+      - name: qbittorrent
+        image: linuxserver/qbittorrent
+        env:
+        - name: WEBUI_PORT
+          value: "8080"
+        - name: TZ
+          value: "Asia/Shanghai"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 6881
+          protocol: TCP
+        - containerPort: 6881
+          protocol: UDP
+        volumeMounts:
+        - name: qbittorrent-config
+          mountPath: "/config"
+        - name: qbittorrent-downloads
+          mountPath: "/downloads"

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-service
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.loadBalancerIP }}
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8080
+  selector:
+    app: qbittorrent
