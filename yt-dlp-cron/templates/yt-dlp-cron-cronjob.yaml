@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: yt-dlp-cron
+spec:
+  schedule: "00 18 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: download-path
+            nfs:
+              server: {{ .Values.nfs.nfsMediaServerAddress }}
+              path: {{ .Values.nfs.nfsDownloadPath }}
+          containers:
+          - name: yt-dlp-cron
+            image: tnk4on/yt-dlp
+            imagePullPolicy: IfNotPresent
+            command:
+            - yt-dlp
+            - --merge-output-format
+            - mp4
+            - {{ .Values.targetList }}
+            - --no-check-certificate
+            volumeMounts:
+            - name: download-path
+              mountPath: /media
+          restartPolicy: OnFailure

@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: persistent-mover-cron
+spec:
+  schedule: "00 19 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: download-path
+            nfs:
+              server: {{ .Values.nfs.nfsMediaServerAddress }}
+              path: {{ .Values.nfs.nfsDownloadPath }}
+          - name: persistent-path
+            nfs:
+              server: {{ .Values.nfs.nfsMediaServerAddress }}
+              path: {{ .Values.nfs.nfsPersistentPath }}
+          containers:
+          - name: rsync-cron
+            image: eeacms/rsync
+            imagePullPolicy: IfNotPresent
+            command:
+            - rsync
+            - -rvu
+            - /download/
+            - /persistent
+            volumeMounts:
+            - name: download-path
+              mountPath: /download
+            - name: persistent-path
+              mountPath: /persistent
+          restartPolicy: OnFailure
