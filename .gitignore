@@ -1,3 +1,4 @@
 .gitsecret/keys/random_seed
 !*.secret
-kiwix/values.yamlaria2/values.yaml
+kiwix/values.yaml
+aria2/values.yaml

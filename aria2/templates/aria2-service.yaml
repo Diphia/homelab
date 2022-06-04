@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aria2-service
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.loadBalancerIP }}
+  ports:
+  - name: web
+    port: 80
+    targetPort: {{ .Values.ariangPort }}
+  - name: rpc
+    port: {{ .Values.rpc.rpcPort }}
+    targetPort: {{ .Values.rpc.rpcPort }}
+  selector:
+    app: aria2

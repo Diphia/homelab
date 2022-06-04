@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aria2
+spec:
+  selector:
+    matchLabels:
+      app: aria2
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: aria2
+    spec:
+      volumes:
+      - name: aria2-download-target
+        nfs:
+          server: {{ .Values.nfs.nfsServerAddress }}
+          path: {{ .Values.nfs.nfsMountPath }}
+      - name: aria2-config
+        emptyDir: {}
+      - name: aria2-configmap
+        configMap:
+          name: aria2-configmap
+      containers:
+      - name: aria2
+        image: p3terx/aria2-pro
+        env:
+        - name: RPC_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: aria2-configmap
+              key: RPC_SECRET
+        ports:
+        - containerPort: {{ .Values.rpc.rpcPort }}
+          protocol: TCP
+        - containerPort: {{ .Values.listenPort }}
+          protocol: TCP
+        - containerPort: {{ .Values.listenPort }}
+          protocol: UDP
+        volumeMounts:
+        - name: aria2-download-target
+          mountPath: "/downloads"
+        - name: aria2-config
+          mountPath: "/config"
+      - name: ariang
+        image: p3terx/ariang
+        ports:
+        - containerPort: {{ .Values.ariangPort }}
