@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiwix
+spec:
+  selector:
+    matchLabels:
+      app: kiwix
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: kiwix
+    spec:
+      volumes:
+      - name: zimlib-nfs
+        nfs:
+          server: {{ .Values.nfs.nfsServerAddress }}
+          path: {{ .Values.nfs.nfsMountPath }}
+      containers:
+      - name: kiwix
+        image: kiwix/kiwix-serve
+        command: ["kiwix-serve"]
+        env:
+        - name: ZIMFILE
+          valueFrom:
+            configMapKeyRef:
+              name: kiwix-configmap
+              key: zimfile
+        args: ["$(ZIMFILE)"]
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/data"
+          name: zimlib-nfs
