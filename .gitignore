@@ -2,3 +2,10 @@
 !*.secret
 kiwix/values.yaml
 aria2/values.yaml
+calibre/values.yaml
+frp/values.yaml
+jellyfin/values.yaml
+jenkins/values.yaml
+qbittorrent/values.yaml
+youtube-dl/values.yaml
+yt-dlp-cron/values.yaml
