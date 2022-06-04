@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+spec:
+  selector:
+    matchLabels:
+      app: jellyfin
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      volumes:
+      - name: jellyfin-media
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMediaMountPathMovie }}
+      - name: jellyfin-media-shows
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMediaMountPathShows }}
+      - name: jellyfin-media-mvs
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMediaMountPathMVs}}
+      - name: jellyfin-config
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsConfigMountPath }}
+      - name: jellyfin-cache
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsCacheMountPath }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu
+                operator: In
+                values:
+                - dedicated
+      containers:
+      - name: jellyfin
+        #image: jellyfin/jellyfin
+        image: lscr.io/linuxserver/jellyfin
+        env:
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "all"
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8096
+          protocol: TCP
+        volumeMounts:
+        - name: jellyfin-media
+          mountPath: "/media"
+        - name: jellyfin-media-shows
+          mountPath: "/shows"
+        - name: jellyfin-media-mvs
+          mountPath: "/mvs"
+        - name: jellyfin-cache
+          mountPath: "/cache"
+        - name: jellyfin-config
+          mountPath: "/config"
