@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: youtube-dl
+spec:
+  selector:
+    matchLabels:
+      app: youtube-dl
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: youtube-dl
+    spec:
+      volumes:
+      - name: youtube-dl-download
+        nfs:
+          server: {{ .Values.nfs.nfsServerAddress }}
+          path: {{ .Values.nfs.nfsMountPath }}
+      containers:
+      - name: youtube-dl
+        image: kmb32123/youtube-dl-server
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: youtube-dl-download
+          mountPath: "/youtube-dl"
