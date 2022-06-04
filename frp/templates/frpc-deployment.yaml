@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frpc
+spec:
+  selector:
+    matchLabels:
+      app: frpc
+  template:
+    metadata:
+      labels:
+        app: frpc
+    spec:
+      containers:
+      - image: snowdreamtech/frpc
+        imagePullPolicy: Always
+        name: frpc
+        volumeMounts:
+        - mountPath: "/etc/frp"
+          name: vol1
+      volumes:
+      - configMap:
+          defaultMode: 256
+          items:
+          - key: frpc.ini
+            path: frpc.ini
+          name: frpc
+          optional: false
+        name: vol1

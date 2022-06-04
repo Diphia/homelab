@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frpc
+  namespace: default
+data:
+  frpc.ini: |-
+    [common]
+    server_addr = {{ .Values.server.serverAddress }}
+    server_port = {{ .Values.server.serverPort }}
+    log_level = info
+    token = {{ .Values.server.serverToken }}
+
+    [{{ .Values.services.serviceA.name }}]
+    type = {{ .Values.services.serviceA.type }}
+    local_ip = {{ .Values.services.serviceA.localIP }}
+    local_port= {{ .Values.services.serviceA.localPort }}
+    remote_port= {{ .Values.services.serviceA.remotePort }}
