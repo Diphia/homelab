@@ -13,6 +13,7 @@ data:
 
     [{{ .Values.services.serviceA.name }}]
     type = {{ .Values.services.serviceA.type }}
+    sk = {{ .Values.services.serviceA.sk }}
     local_ip = {{ .Values.services.serviceA.localIP }}
     local_port= {{ .Values.services.serviceA.localPort }}
     remote_port= {{ .Values.services.serviceA.remotePort }}
