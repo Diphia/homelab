@@ -1,0 +1,6 @@
+[master]
+kube-1
+
+[worker]
+kube-2
+kube-3

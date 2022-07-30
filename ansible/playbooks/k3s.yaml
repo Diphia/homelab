@@ -1,0 +1,64 @@
+- name: Download k3s binary x64
+  hosts: "*"
+  vars:
+    k3s_version: "v1.24.1+k3s1"
+  tasks:
+    - name: download k3s
+      become: yes
+      get_url:
+        url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
+        checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-amd64.txt
+        dest: /usr/local/bin/k3s
+        owner: root
+        group: root
+        mode: 0755
+
+- name: Clean previous runs of k3s-init
+  hosts: "*"
+  tasks:
+    - name: clean previous runs of k3s-init
+      systemd:
+        name: k3s-init
+        state: stopped
+      failed_when: false
+
+- name: Clean previous runs of k3s-init
+  hosts: "*"
+  tasks:
+    - name: clean previous runs of k3s init
+      command: systemctl reset-failed k3s-init
+      failed_when: false
+      changed_when: false
+      args:
+        warn: false  # The ansible systemd module does not support reset-failed
+
+- name: Init cluster
+  hosts: "master"
+  tasks:
+    - name: init cluster
+      become: yes
+      command:
+        cmd: "k3s server \
+        --token=5^[:5GTbZwwE \
+        --cluster-init \
+        --no-deploy servicelb \
+        --no-deploy traefik"
+        creates: "/etc/systemd/system/k3s.service"
+      args:
+        warn: false
+
+
+- name: Init cluster inside the transient k3s-init service
+  hosts: "worker"
+  tasks:
+    - name: init cluster
+      become: yes
+      command:
+        cmd: "k3s server \
+        --token=5^[:5GTbZwwE \
+        --server https://10.0.2.1:6443 \
+        --no-deploy servicelb \
+        --no-deploy traefik"
+        creates: "/etc/systemd/system/k3s.service"
+      args:
+        warn: false
