@@ -29,7 +29,7 @@ spec:
               - key: network.policy
                 operator: In
                 values:
-                - direct
+                - managed
       containers:
       - name: qbittorrent
         image: linuxserver/qbittorrent
