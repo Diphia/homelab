@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+spec:
+  selector:
+    matchLabels:
+      app: influxdb
+  replicas: {{ index .Values "replicaCount" }}
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      volumes:
+      - name: db-storage
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMountPath }}
+      containers:
+      - name: influxdb
+        image: influxdb:1.8
+        env:
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8086
+          protocol: TCP
+        volumeMounts:
+        - name: db-storage
+          mountPath: "/var/lib/influxdb"
