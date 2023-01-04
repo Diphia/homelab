@@ -1,0 +1,17 @@
+ansible_user: serveradmin
+k3s_version: v1.24.3+k3s1
+systemd_dir: /etc/systemd/system
+
+apiserver_endpoint: "10.0.2.100"
+k3s_token: "asd8fya0df8adf8y"
+
+flannel_iface: eth0
+
+extra_server_args: "--no-deploy servicelb --no-deploy traefik"
+extra_agent_args: ""
+
+kube_vip_tag_version: "v0.5.0"
+
+metal_lb_speaker_tag_version: "v0.13.4"
+metal_lb_controller_tag_version: "v0.13.4"
+metal_lb_ip_range: "10.0.3.1-10.0.3.254"
