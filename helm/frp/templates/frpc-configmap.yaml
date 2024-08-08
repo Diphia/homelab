@@ -8,12 +8,17 @@ data:
     [common]
     server_addr = {{ .Values.server.serverAddress }}
     server_port = {{ .Values.server.serverPort }}
-    log_level = info
+    log_level = {{ .Values.logLevel }}
     token = {{ .Values.server.serverToken }}
 
-    [{{ .Values.services.serviceA.name }}]
-    type = {{ .Values.services.serviceA.type }}
-    sk = {{ .Values.services.serviceA.sk }}
-    local_ip = {{ .Values.services.serviceA.localIP }}
-    local_port= {{ .Values.services.serviceA.localPort }}
-    remote_port= {{ .Values.services.serviceA.remotePort }}
+    {{- range $name, $service := .Values.frpc.services }}
+    [{{ $name }}]
+    type = {{ $service.type }}
+    sk = {{ $service.sk }}
+    local_ip = {{ $service.localIP }}
+    local_port = {{ $service.localPort }}
+    {{- if $service.remotePort }}
+    remote_port = {{ $service.remotePort }}
+    {{- end }}
+    {{- end }}
+
