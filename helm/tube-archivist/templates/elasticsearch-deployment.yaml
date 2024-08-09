@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: "{{ .Values.elasticsearch.image.repository }}:{{ .Values.elasticsearch.image.tag }}"
+        ports:
+        - containerPort: 9200
+        env:
+        - name: ELASTIC_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}"
+        - name: ES_JAVA_OPTS
+          value: "{{ .Values.elasticsearch.javaOpts }}"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: discovery.type
+          value: single-node
+        - name: path.repo
+          value: /usr/share/elasticsearch/data/snapshot
+        volumeMounts:
+        - name: elasticsearch-data
+          mountPath: /usr/share/elasticsearch/data
+      volumes:
+      - name: elasticsearch-data
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.elasticsearch }}

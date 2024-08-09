@@ -10,3 +10,4 @@ helm/qbittorrent/values.yaml
 helm/youtube-dl/values.yaml
 helm/yt-dlp-cron/values.yaml
 helm/nginx/values.yaml
+helm/tube-archivist/values.yaml

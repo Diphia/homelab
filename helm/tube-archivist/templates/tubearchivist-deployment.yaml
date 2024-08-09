@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-tubearchivist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tubearchivist
+  template:
+    metadata:
+      labels:
+        app: tubearchivist
+    spec:
+      containers:
+      - name: tubearchivist
+        image: "{{ .Values.tubearchivist.image.repository }}:{{ .Values.tubearchivist.image.tag }}"
+        ports:
+        - containerPort: 8000
+        env:
+        - name: ES_URL
+          value: "http://{{ .Release.Name }}-elasticsearch:9200"
+        - name: REDIS_HOST
+          value: "{{ .Release.Name }}-redis"
+        - name: HOST_UID
+          value: "{{ .Values.tubearchivist.hostUID | quote }}"
+        - name: HOST_GID
+          value: "{{ .Values.tubearchivist.hostGID | quote }}"
+        - name: TA_HOST
+          value: "{{ .Values.tubearchivist.host }}"
+        - name: TA_USERNAME
+          value: "{{ .Values.tubearchivist.username }}"
+        - name: TA_PASSWORD
+          value: "{{ .Values.tubearchivist.password }}"
+        - name: ELASTIC_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}"
+        - name: TZ
+          value: "{{ .Values.tubearchivist.timezone }}"
+        volumeMounts:
+        - name: media
+          mountPath: /youtube
+        - name: cache
+          mountPath: /cache
+      volumes:
+      - name: media
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.media }}
+      - name: cache
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.cache }}
