@@ -35,4 +35,4 @@ spec:
       - name: elasticsearch-data
         nfs:
           server: {{ .Values.nfs.server }}
-          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.elasticsearch }}
+          path: {{ .Values.nfs.paths.elasticsearch }}

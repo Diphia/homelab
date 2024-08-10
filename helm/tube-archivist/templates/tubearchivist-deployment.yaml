@@ -18,14 +18,24 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        {{- if .Values.tubearchivist.httpProxy }}
+        - name: HTTP_PROXY
+          value: {{ .Values.tubearchivist.httpProxy }}
+        {{- end }}
+        {{- if .Values.tubearchivist.httpsProxy }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.tubearchivist.httpsProxy }}
+        {{- end }}
+        - name: NO_PROXY
+          value: "localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,{{ .Release.Name }}-elasticsearch,{{ .Release.Name }}-redis"
         - name: ES_URL
           value: "http://{{ .Release.Name }}-elasticsearch:9200"
         - name: REDIS_HOST
           value: "{{ .Release.Name }}-redis"
         - name: HOST_UID
-          value: "{{ .Values.tubearchivist.hostUID | quote }}"
+          value: "{{ .Values.tubearchivist.hostUID }}"
         - name: HOST_GID
-          value: "{{ .Values.tubearchivist.hostGID | quote }}"
+          value: "{{ .Values.tubearchivist.hostGID }}"
         - name: TA_HOST
           value: "{{ .Values.tubearchivist.host }}"
         - name: TA_USERNAME
@@ -45,8 +55,8 @@ spec:
       - name: media
         nfs:
           server: {{ .Values.nfs.server }}
-          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.media }}
+          path: {{ .Values.nfs.paths.media }}
       - name: cache
         nfs:
           server: {{ .Values.nfs.server }}
-          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.cache }}
+          path: {{ .Values.nfs.paths.cache }}

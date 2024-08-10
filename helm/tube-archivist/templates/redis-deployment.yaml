@@ -24,4 +24,4 @@ spec:
       - name: redis-data
         nfs:
           server: {{ .Values.nfs.server }}
-          path: {{ .Values.nfs.basePath }}{{ .Values.nfs.paths.redis }}
+          path: {{ .Values.nfs.paths.redis }}
