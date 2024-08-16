@@ -4,21 +4,21 @@ metadata:
   name: frpc
   namespace: default
 data:
-  frpc.ini: |-
-    [common]
-    server_addr = {{ .Values.server.serverAddress }}
-    server_port = {{ .Values.server.serverPort }}
-    log_level = {{ .Values.logLevel }}
-    token = {{ .Values.server.serverToken }}
+  frpc.toml: |-
+    serverAddr = "{{ .Values.server.serverAddress }}"
+    serverPort = {{ .Values.server.serverPort }}
+    auth.token = "{{ .Values.server.serverToken }}"
 
-    {{- range $name, $service := .Values.frpc.services }}
-    [{{ $name }}]
-    type = {{ $service.type }}
-    sk = {{ $service.sk }}
-    local_ip = {{ $service.localIP }}
-    local_port = {{ $service.localPort }}
+    {{- range $name, $service := .Values.services }}
+    [[ proxies ]]
+    name = "{{ $name }}"
+    type = "{{ $service.type }}"
+    {{- if $service.sk }}
+    secretKey = "{{ $service.sk }}"
+    {{- end }}
+    localIp = "{{ $service.localIP }}"
+    localPort = {{ $service.localPort }}
     {{- if $service.remotePort }}
-    remote_port = {{ $service.remotePort }}
+    remotePort = {{ $service.remotePort }}
     {{- end }}
     {{- end }}
-

@@ -22,8 +22,8 @@ spec:
       - configMap:
           defaultMode: 256
           items:
-          - key: frpc.ini
-            path: frpc.ini
+          - key: frpc.toml
+            path: frpc.toml
           name: frpc
           optional: false
         name: vol1
