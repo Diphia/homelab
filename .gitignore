@@ -1,5 +1,6 @@
 .gitsecret/keys/random_seed
 !*.secret
+helm/influxdb/values.yaml
 helm/kiwix/values.yaml
 helm/aria2/values.yaml
 helm/calibre/values.yaml
