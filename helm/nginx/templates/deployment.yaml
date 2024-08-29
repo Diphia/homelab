@@ -19,11 +19,20 @@ spec:
         - name: http
           containerPort: 80
           protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
         volumeMounts:
         - name: config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+        - name: ssl
+          mountPath: /etc/nginx/ssl
+          readOnly: true
       volumes:
       - name: config
         configMap:
           name: nginx-config
+      - name: ssl
+        secret:
+          secretName: int-monism-cc-tls
