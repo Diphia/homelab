@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifactos-config
+  namespace: default
+data:
+  config.yaml: |-
+    TOKEN: 'Y5ghluJpDhOPKhHuX6ki7Ftg8teJUi12pLmAV3ArJfrAxlvICTwhyyDguZs6PK55'
+
