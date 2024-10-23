@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: navidrome
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: navidrome
+  template:
+    metadata:
+      labels:
+        app: navidrome
+    spec:
+      containers:
+      - name: navidrome
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - name: http
+          containerPort: 4533
+          protocol: TCP
+        env:
+        - name: ND_LOGLEVEL
+          value: "info"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: music
+          mountPath: /music
+        securityContext:
+          runAsUser: 1000
+      volumes:
+      - name: data
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsDataMountPath}}
+      - name: music
+        nfs:
+          server: {{ .Values.nfs.nfsMediaServerAddress }}
+          path: {{ .Values.nfs.nfsMusicMountPath}}
