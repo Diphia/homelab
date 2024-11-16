@@ -13,3 +13,4 @@ helm/yt-dlp-cron/values.yaml
 helm/nginx/values.yaml
 helm/tube-archivist/values.yaml
 helm/navidrome/values.yaml
+helm/artifactos/values.yaml
