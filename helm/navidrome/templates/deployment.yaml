@@ -12,6 +12,15 @@ spec:
       labels:
         app: navidrome
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - kube-1
       containers:
       - name: navidrome
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -31,9 +40,8 @@ spec:
           runAsUser: 1000
       volumes:
       - name: data
-        nfs:
-          server: {{ .Values.nfs.nfsMediaServerAddress }}
-          path: {{ .Values.nfs.nfsDataMountPath}}
+        persistentVolumeClaim:
+          claimName: pvc-data
       - name: music
         nfs:
           server: {{ .Values.nfs.nfsMediaServerAddress }}
