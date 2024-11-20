@@ -35,4 +35,4 @@ spec:
           name: nginx-config
       - name: ssl
         secret:
-          secretName: int-monism-cc-tls
+          secretName: int-pawabondo-com-tls
